@@ -5,7 +5,7 @@ A Pharo Smalltalk client library for the [Ollama](https://ollama.com) API.
 ## Features
 
 - **Embed** — generate text embeddings via `/api/embed`
-- **Generate** — *(planned)*
+- **Generate** — text generation via `/api/generate`
 - **Chat** — *(planned)*
 - No external dependencies — uses Zinc HTTP and STON bundled with Pharo
 
@@ -67,6 +67,44 @@ The response is a `Dictionary` matching the Ollama API JSON response:
 result := ollama embed: 'Hello' model: 'qwen3-embedding:4b'.
 result at: 'embeddings'.   "=> Array of embedding vectors"
 result at: 'model'.        "=> 'qwen3-embedding:4b'"
+```
+
+### Generate
+
+```smalltalk
+"Generate with explicit model"
+ollama generate: 'Why is the sky blue? Answer in one sentence.'
+        model: 'nemotron-3-nano:4b'.
+
+"Set a default model once, then omit it"
+ollama model: 'nemotron-3-nano:4b'.
+ollama generate: 'Why is the sky blue? Answer in one sentence.'.
+
+"With system prompt and options via builder block"
+ollama
+    generate: 'Why is the sky blue? Answer in one sentence.'
+    using: [ :params |
+        params
+            model: 'nemotron-3-nano:4b';
+            system: 'You are a concise assistant.';
+            optionsBy: [ :opts | opts temperature: 0.7 ] ].
+```
+
+The response is a `Dictionary` matching the Ollama API JSON response:
+
+```smalltalk
+result := ollama generate: 'Why is the sky blue?' model: 'nemotron-3-nano:4b'.
+result at: 'response'.   "=> generated text string"
+result at: 'done'.       "=> true"
+result at: 'model'.      "=> 'nemotron-3-nano:4b'"
+```
+
+### Timeout
+
+Generate requests can take time depending on the model. The default timeout is 120 seconds and can be adjusted:
+
+```smalltalk
+ollama settings timeout: 300.
 ```
 
 ## Development
