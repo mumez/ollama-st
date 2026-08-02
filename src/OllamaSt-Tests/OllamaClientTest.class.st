@@ -6,8 +6,18 @@ Class {
 }
 
 { #category : 'accessing' }
-OllamaClientTest >> defaultModel [
+OllamaClientTest >> defaultEmbedModel [
 	^ 'qwen3-embedding:4b'
+]
+
+{ #category : 'accessing' }
+OllamaClientTest >> defaultGenerateModel [
+	^ 'nemotron-3-nano:4b'
+]
+
+{ #category : 'accessing' }
+OllamaClientTest >> defaultModel [
+	^ self defaultEmbedModel
 ]
 
 { #category : 'tests' }
@@ -55,4 +65,37 @@ OllamaClientTest >> testSettingsDefaultHost [
 	| client |
 	client := OllamaClient new.
 	self assert: client settings host equals: 'http://localhost:11434'
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testGenerateWithModel [
+	| result |
+	result := OllamaClient new
+		generate: 'Why is the sky blue? Answer in one sentence.'
+		model: self defaultGenerateModel.
+	self assert: (result at: 'done').
+	self assert: (result at: 'response') isNil not.
+	self assert: (result at: 'response') isEmpty not
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testGenerateWithDefaultModel [
+	| client result |
+	client := OllamaClient new.
+	client model: self defaultGenerateModel.
+	result := client generate: 'Say hello in one word.'.
+	self assert: (result at: 'model') equals: self defaultGenerateModel
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testGenerateUsingBlock [
+	| result |
+	result := OllamaClient new
+		generate: 'Why is the sky blue? Answer in one sentence.'
+		using: [ :params |
+			params
+				model: self defaultGenerateModel;
+				system: 'You are a concise assistant.' ].
+	self assert: (result at: 'done').
+	self assert: (result at: 'response') isEmpty not
 ]

@@ -61,6 +61,21 @@ OllamaSettings >> host: aString [
 	self at: #host put: aString
 ]
 
+{ #category : 'defaults' }
+OllamaSettings >> defaultTimeout [
+	^ 120
+]
+
+{ #category : 'accessing' }
+OllamaSettings >> timeout [
+	^ self at: #timeout ifAbsentPut: [ self defaultTimeout ]
+]
+
+{ #category : 'accessing' }
+OllamaSettings >> timeout: seconds [
+	self at: #timeout put: seconds
+]
+
 { #category : 'initialization' }
 OllamaSettings >> initialize [
 	settingsDict := nil
