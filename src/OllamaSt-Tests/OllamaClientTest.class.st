@@ -99,3 +99,52 @@ OllamaClientTest >> testGenerateUsingBlock [
 	self assert: (result at: 'done').
 	self assert: (result at: 'response') isEmpty not
 ]
+
+{ #category : 'tests' }
+OllamaClientTest >> testChatWithModel [
+	| result message |
+	result := OllamaClient new
+		chat: 'Why is the sky blue? Answer in one sentence.'
+		model: self defaultGenerateModel.
+	self assert: (result at: 'done').
+	message := result at: 'message'.
+	self assert: (message at: 'role') equals: 'assistant'.
+	self assert: (message at: 'content') isEmpty not
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testChatWithDefaultModel [
+	| client result |
+	client := OllamaClient new.
+	client model: self defaultGenerateModel.
+	result := client chat: 'Say hello in one word.'.
+	self assert: (result at: 'model') equals: self defaultGenerateModel
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testChatUsingBlock [
+	| result message |
+	result := OllamaClient new
+		chat: 'Why is the sky blue? Answer in one sentence.'
+		using: [ :params |
+			params
+				model: self defaultGenerateModel;
+				systemMessage: 'You are a concise assistant.' ].
+	self assert: (result at: 'done').
+	message := result at: 'message'.
+	self assert: (message at: 'content') isEmpty not
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testChatWithMessages [
+	| messages result message |
+	messages := {
+		OllamaMessage system: 'You are a concise assistant.'.
+		OllamaMessage user: 'Why is the sky blue? Answer in one sentence.' }.
+	result := OllamaClient new
+		chatWith: messages
+		model: self defaultGenerateModel.
+	self assert: (result at: 'done').
+	message := result at: 'message'.
+	self assert: (message at: 'role') equals: 'assistant'
+]

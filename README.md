@@ -6,7 +6,7 @@ A Pharo Smalltalk client library for the [Ollama](https://ollama.com) API.
 
 - **Embed** — generate text embeddings via `/api/embed`
 - **Generate** — text generation via `/api/generate`
-- **Chat** — *(planned)*
+- **Chat** — multi-turn conversation via `/api/chat`
 - No external dependencies — uses Zinc HTTP and STON bundled with Pharo
 
 ## Requirements
@@ -105,6 +105,45 @@ Generate requests can take time depending on the model. The default timeout is 1
 
 ```smalltalk
 ollama settings timeout: 300.
+```
+
+### Chat
+
+```smalltalk
+"Single user message with explicit model"
+ollama chat: 'Why is the sky blue? Answer in one sentence.'
+       model: 'nemotron-3-nano:4b'.
+
+"Set a default model once, then omit it"
+ollama model: 'nemotron-3-nano:4b'.
+ollama chat: 'Why is the sky blue? Answer in one sentence.'.
+
+"With system message via builder block"
+ollama
+    chat: 'Why is the sky blue? Answer in one sentence.'
+    using: [ :params |
+        params
+            model: 'nemotron-3-nano:4b';
+            systemMessage: 'You are a concise assistant.';
+            optionsBy: [ :opts | opts temperature: 0.7 ] ].
+
+"Multi-turn conversation with OllamaMessage"
+| messages |
+messages := {
+    OllamaMessage system: 'You are a concise assistant.'.
+    OllamaMessage user: 'Why is the sky blue?'.
+    OllamaMessage assistant: 'Because of Rayleigh scattering.'.
+    OllamaMessage user: 'Can you elaborate in one sentence?' }.
+ollama chatWith: messages model: 'nemotron-3-nano:4b'.
+```
+
+The response is a `Dictionary` matching the Ollama API JSON response:
+
+```smalltalk
+result := ollama chat: 'Why is the sky blue?' model: 'nemotron-3-nano:4b'.
+result at: 'done'.                          "=> true"
+(result at: 'message') at: 'role'.          "=> 'assistant'"
+(result at: 'message') at: 'content'.       "=> generated reply string"
 ```
 
 ## Development

@@ -36,6 +36,43 @@ OllamaClient >> generate: prompt using: aBlock [
 ]
 
 { #category : 'actions' }
+OllamaClient >> chat: text [
+	^ self chat: text using: [ :params | ]
+]
+
+{ #category : 'actions' }
+OllamaClient >> chat: text model: modelName [
+	^ self chat: text using: [ :params | params model: modelName ]
+]
+
+{ #category : 'actions' }
+OllamaClient >> chat: text using: aBlock [
+	^ self chatWith: { OllamaMessage user: text } using: aBlock
+]
+
+{ #category : 'actions' }
+OllamaClient >> chatWith: messages [
+	^ self chatWith: messages using: [ :params | ]
+]
+
+{ #category : 'actions' }
+OllamaClient >> chatWith: messages model: modelName [
+	^ self chatWith: messages using: [ :params | params model: modelName ]
+]
+
+{ #category : 'actions' }
+OllamaClient >> chatWith: messages using: aBlock [
+	| params body |
+	params := OllamaChatParams new
+		model: self settings defaultModel;
+		messages: messages;
+		yourself.
+	aBlock value: params.
+	body := params asDictionary.
+	^ self httpJsonPost: '/api/chat' body: body
+]
+
+{ #category : 'actions' }
 OllamaClient >> embed: text [
 	^ self embed: text using: [ :params | ]
 ]
