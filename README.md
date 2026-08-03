@@ -111,7 +111,7 @@ Both `generate` and `chat` support streaming responses. Set `stream: true` in th
 response := ollama
     generate: 'Why is the sky blue? Answer in one sentence.'
     using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
-response do: [ :chunk | Transcript show: (chunk at: 'response'); flush ].
+response do: [ :chunk | Transcript show: (chunk at: 'response') ].
 ```
 
 ```smalltalk
@@ -121,7 +121,7 @@ response := ollama
     using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
 [
     [ response atEnd ] whileFalse: [
-        Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]); flush ]
+        Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]) ]
 ] ensure: [ response close ].
 ```
 
