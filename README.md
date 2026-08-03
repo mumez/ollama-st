@@ -211,11 +211,15 @@ src/
 └── OllamaSt-Tests/
 ```
 
-Run the test suite:
+Run the test suites:
 
 ```smalltalk
 OllamaClientTest suite run.
+OllamaErrorTest suite run.
+OllamaStreamResponseTest suite run.
 ```
+
+Note: `OllamaClientTest` assumes a local Ollama server is running at `http://localhost:11434/`. `OllamaErrorTest` and `OllamaStreamResponseTest` do not require a running server.
 
 ## License
 
