@@ -32,7 +32,9 @@ OllamaClient >> generate: prompt using: aBlock [
 	aBlock value: params.
 	body := params asDictionary.
 	body at: 'prompt' put: prompt.
-	^ self httpJsonPost: '/api/generate' body: body
+	^ params isStreaming
+		ifTrue: [ self httpJsonPostStreaming: '/api/generate' body: body ]
+		ifFalse: [ self httpJsonPost: '/api/generate' body: body ]
 ]
 
 { #category : 'actions' }
@@ -69,7 +71,9 @@ OllamaClient >> chatWith: messages using: aBlock [
 		yourself.
 	aBlock value: params.
 	body := params asDictionary.
-	^ self httpJsonPost: '/api/chat' body: body
+	^ params isStreaming
+		ifTrue: [ self httpJsonPostStreaming: '/api/chat' body: body ]
+		ifFalse: [ self httpJsonPost: '/api/chat' body: body ]
 ]
 
 { #category : 'actions' }
@@ -123,12 +127,17 @@ OllamaClient >> version [
 ]
 
 { #category : 'private' }
+OllamaClient >> newHttpClient [
+	^ ZnClient new
+		timeout: self settings timeout;
+		yourself
+]
+
+{ #category : 'private' }
 OllamaClient >> httpJsonGet: path [
 	| url cli |
 	url := self settings host , path.
-	cli := ZnClient new
-		timeout: self settings timeout;
-		yourself.
+	cli := self newHttpClient.
 	cli get: url.
 	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
 	^ STON fromString: cli response entity string
@@ -138,11 +147,25 @@ OllamaClient >> httpJsonGet: path [
 OllamaClient >> httpJsonPost: path body: aDictionary [
 	| url cli |
 	url := self settings host , path.
-	cli := ZnClient new
+	cli := self newHttpClient
 		forJsonREST;
-		timeout: self settings timeout;
 		yourself.
 	cli post: url contents: aDictionary.
 	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
 	^ STON fromString: cli response entity string
+]
+
+{ #category : 'private' }
+OllamaClient >> httpJsonPostStreaming: path body: aDictionary [
+	| url cli |
+	url := self settings host , path.
+	cli := self newHttpClient
+		contentWriter: [ :data | ZnEntity json: (ZnUtils defaultJSONWriter toString: data) ];
+		streaming: true;
+		yourself.
+	cli post: url contents: aDictionary.
+	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
+	^ OllamaStreamResponse
+		on: (ZnCharacterReadStream on: cli response entity stream)
+		entity: cli response entity
 ]

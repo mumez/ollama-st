@@ -20,7 +20,7 @@ OllamaError >> messageText [
 	^ messageText ifNil: [
 		response
 			ifNil: [ 'OllamaError' ]
-			ifNotNil: [ 'HTTP ' , response code printString , ': ' , response entity string ] ]
+			ifNotNil: [ 'HTTP ' , response code printString , ': ' , response entity contents ] ]
 ]
 
 { #category : 'accessing' }

@@ -5,8 +5,8 @@ A Pharo Smalltalk client library for the [Ollama](https://ollama.com) API.
 ## Features
 
 - **Embed** — generate text embeddings via `/api/embed`
-- **Generate** — text generation via `/api/generate`
-- **Chat** — multi-turn conversation via `/api/chat`
+- **Generate** — text generation via `/api/generate`, including streaming
+- **Chat** — multi-turn conversation via `/api/chat`, including streaming
 - **Tags** — list locally available models via `/api/tags`
 - **PS** — list running models via `/api/ps`
 - **Version** — server version via `/api/version`
@@ -100,6 +100,41 @@ result := ollama generate: 'Why is the sky blue?' model: 'nemotron-3-nano:4b'.
 result at: 'response'.   "=> generated text string"
 result at: 'done'.       "=> true"
 result at: 'model'.      "=> 'nemotron-3-nano:4b'"
+```
+
+### Streaming
+
+Both `generate` and `chat` support streaming responses. Set `stream: true` in the builder block; the method then returns an `OllamaStreamResponse` instead of a `Dictionary`. Enumerate all chunks with `do:`; it closes the response automatically, including when the block exits early or raises an error.
+
+```smalltalk
+"Generate streaming — enumerate with do:"
+response := ollama
+    generate: 'Why is the sky blue? Answer in one sentence.'
+    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
+response do: [ :chunk | Transcript show: (chunk at: 'response'); flush ].
+```
+
+```smalltalk
+"Generate streaming — manual pull loop for finer control"
+response := ollama
+    generate: 'Why is the sky blue? Answer in one sentence.'
+    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
+[
+    [ response atEnd ] whileFalse: [
+        Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]); flush ]
+] ensure: [ response close ].
+```
+
+```smalltalk
+"Chat streaming"
+| messages chatResponse |
+messages := {
+    OllamaMessage system: 'You are a concise assistant.'.
+    OllamaMessage user: 'Why is the sky blue?' }.
+chatResponse := ollama
+    chatWith: messages
+    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
+chatResponse do: [ :chunk | Transcript show: ((chunk at: 'message') at: 'content'); flush ].
 ```
 
 ### Timeout
