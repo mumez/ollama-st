@@ -1,3 +1,20 @@
+"
+I hold parameters for an Ollama /api/embed request.
+
+Responsibility:
+- I collect the model name, optional output dimensions, and runner options.
+- I serialize everything to a request body Dictionary via #asDictionary.
+- The input text itself is added by OllamaClient after the builder block runs.
+
+Collaborators:
+- OllamaClient: creates and configures me via a builder block, then merges 'input' into my dictionary.
+- OllamaOptions: optional runner options (temperature, seed, etc.).
+
+Public API and Key Messages:
+- #model: — set the embedding model name.
+- #dimensions: — request a specific output vector length (if supported by the model).
+- #optionsBy: aBlock — configure runner options via a builder block.
+"
 Class {
 	#name : 'OllamaEmbedParams',
 	#superclass : 'Object',

@@ -1,3 +1,22 @@
+"
+I represent a single message in an Ollama chat conversation.
+
+Responsibility:
+- I hold a role ('user', 'assistant', or 'system') and a text content string.
+- I serialize myself to a Dictionary for inclusion in a Chat API request body.
+
+Collaborators:
+- OllamaChatParams: collects me into its messages list.
+- OllamaClient: passes my serialized form to the /api/chat endpoint.
+
+Public API and Key Messages:
+- OllamaMessage user: text — create a user message.
+- OllamaMessage assistant: text — create an assistant message (for conversation history).
+- OllamaMessage system: text — create a system prompt message.
+- OllamaMessage fromDictionary: dict — reconstruct from a response dictionary.
+- #isUser, #isAssistant, #isSystem — role predicates.
+- #asDictionary — serialize to {'role' -> ..., 'content' -> ...}.
+"
 Class {
 	#name : 'OllamaMessage',
 	#superclass : 'Object',

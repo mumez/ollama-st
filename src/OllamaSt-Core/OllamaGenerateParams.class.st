@@ -1,3 +1,21 @@
+"
+I hold parameters for an Ollama /api/generate request.
+
+Responsibility:
+- I collect the model name, optional system prompt, runner options, and stream flag.
+- I serialize everything to a request body Dictionary via #asDictionary.
+
+Collaborators:
+- OllamaClient: creates and configures me via a builder block, then calls #asDictionary.
+- OllamaOptions: optional runner options (temperature, seed, etc.).
+
+Public API and Key Messages:
+- #model: — set the model name.
+- #system: — set an optional system prompt prepended to the generation.
+- #optionsBy: aBlock — configure runner options via a builder block.
+- #stream: true/false — enable streaming response (default: false).
+- #isStreaming — true when stream: true has been set.
+"
 Class {
 	#name : 'OllamaGenerateParams',
 	#superclass : 'Object',

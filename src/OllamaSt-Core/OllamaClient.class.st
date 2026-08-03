@@ -1,3 +1,35 @@
+"
+I am the main entry point for communicating with a local Ollama server.
+
+Responsibility:
+- I send Embed, Generate, and Chat requests to the Ollama HTTP API.
+- I maintain an OllamaSettings instance that holds the host URL, default model, and timeout.
+- I dispatch both blocking (non-streaming) and streaming requests.
+
+Collaborators:
+- OllamaSettings: holds host, defaultModel, and timeout used by all requests.
+- OllamaEmbedParams, OllamaGenerateParams, OllamaChatParams: parameter objects built via builder blocks and serialized to JSON request bodies.
+- OllamaMessage: used to compose multi-turn chat conversations.
+- OllamaStreamResponse: returned for streaming requests (stream: true).
+- OllamaError: signaled on non-2xx HTTP responses.
+
+Public API and Key Messages:
+- #embed:model: — generate an embedding vector for a text string.
+- #generate:model: — generate a text completion for a prompt.
+- #chat:model: — send a single user message and receive a reply.
+- #chatWith:model: — send a sequence of OllamaMessages for multi-turn chat.
+- #embed:using:, #generate:using:, #chat:using:, #chatWith:using: — builder-block variants for advanced options (dimensions, system prompt, streaming, runner options).
+- #tags — list locally available models.
+- #ps — list currently running (loaded) models.
+- #version — return the Ollama server version string.
+- #model: — set the default model on the receiver's settings.
+
+Example:
+  ollama := OllamaClient new.
+  ollama model: 'nemotron-3-nano:4b'.
+  result := ollama generate: 'Why is the sky blue?'.
+  Transcript showCr: (result at: 'response').
+"
 Class {
 	#name : 'OllamaClient',
 	#superclass : 'Object',
