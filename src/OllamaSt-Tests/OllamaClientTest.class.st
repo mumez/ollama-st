@@ -136,6 +136,30 @@ OllamaClientTest >> testChatUsingBlock [
 ]
 
 { #category : 'tests' }
+OllamaClientTest >> testTags [
+	| result models |
+	result := OllamaClient new tags.
+	models := result at: 'models'.
+	self assert: models isNil not.
+	self assert: models isCollection
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testPs [
+	| result |
+	result := OllamaClient new ps.
+	self assert: (result includesKey: 'models')
+]
+
+{ #category : 'tests' }
+OllamaClientTest >> testVersion [
+	| version |
+	version := OllamaClient new version.
+	self assert: version isNil not.
+	self assert: version isString
+]
+
+{ #category : 'tests' }
 OllamaClientTest >> testChatWithMessages [
 	| messages result message |
 	messages := {

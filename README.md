@@ -7,6 +7,9 @@ A Pharo Smalltalk client library for the [Ollama](https://ollama.com) API.
 - **Embed** — generate text embeddings via `/api/embed`
 - **Generate** — text generation via `/api/generate`
 - **Chat** — multi-turn conversation via `/api/chat`
+- **Tags** — list locally available models via `/api/tags`
+- **PS** — list running models via `/api/ps`
+- **Version** — server version via `/api/version`
 - No external dependencies — uses Zinc HTTP and STON bundled with Pharo
 
 ## Requirements
@@ -144,6 +147,22 @@ result := ollama chat: 'Why is the sky blue?' model: 'nemotron-3-nano:4b'.
 result at: 'done'.                          "=> true"
 (result at: 'message') at: 'role'.          "=> 'assistant'"
 (result at: 'message') at: 'content'.       "=> generated reply string"
+```
+
+### Tags, PS, Version
+
+```smalltalk
+"List all locally available models"
+ollama tags.
+"=> Dictionary with 'models' key containing an Array of model info Dictionaries"
+
+"List currently running (loaded) models"
+ollama ps.
+"=> Dictionary with 'models' key"
+
+"Get the Ollama server version"
+ollama version.
+"=> '0.9.6' (String)"
 ```
 
 ## Development

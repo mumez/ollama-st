@@ -107,6 +107,33 @@ OllamaClient >> settings: anObject [
 	settings := anObject
 ]
 
+{ #category : 'actions' }
+OllamaClient >> ps [
+	^ self httpJsonGet: '/api/ps'
+]
+
+{ #category : 'actions' }
+OllamaClient >> tags [
+	^ self httpJsonGet: '/api/tags'
+]
+
+{ #category : 'actions' }
+OllamaClient >> version [
+	^ (self httpJsonGet: '/api/version') at: 'version'
+]
+
+{ #category : 'private' }
+OllamaClient >> httpJsonGet: path [
+	| url cli |
+	url := self settings host , path.
+	cli := ZnClient new
+		timeout: self settings timeout;
+		yourself.
+	cli get: url.
+	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
+	^ STON fromString: cli response entity string
+]
+
 { #category : 'private' }
 OllamaClient >> httpJsonPost: path body: aDictionary [
 	| url cli |
