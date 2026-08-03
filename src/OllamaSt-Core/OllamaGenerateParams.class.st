@@ -53,7 +53,7 @@ OllamaGenerateParams >> optionsBy: aBlock [
 
 { #category : 'accessing' }
 OllamaGenerateParams >> stream [
-	^ stream
+	^ stream ifNil: [ false ]
 ]
 
 { #category : 'accessing' }

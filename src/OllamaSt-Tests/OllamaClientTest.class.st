@@ -208,5 +208,5 @@ OllamaClientTest >> testChatWithMessagesStreaming [
 	self assert: chunks isEmpty not.
 	self assert: (chunks last at: 'done').
 	self assert: (chunks anySatisfy: [ :c |
-		((c at: 'message') at: 'content' ifAbsent: [ '' ]) isEmpty not ])
+		((c at: 'message' ifAbsent: [ Dictionary new ]) at: 'content' ifAbsent: [ '' ]) isEmpty not ])
 ]

@@ -67,18 +67,18 @@ OllamaChatParams >> optionsBy: aBlock [
 ]
 
 { #category : 'accessing' }
-OllamaChatParams >> systemMessage: aString [
-	self messages addFirst: (OllamaMessage system: aString)
-]
-
-{ #category : 'accessing' }
 OllamaChatParams >> stream [
-	^ stream
+	^ stream ifNil: [ false ]
 ]
 
 { #category : 'accessing' }
 OllamaChatParams >> stream: aBoolean [
 	stream := aBoolean
+]
+
+{ #category : 'accessing' }
+OllamaChatParams >> systemMessage: aString [
+	self messages addFirst: (OllamaMessage system: aString)
 ]
 
 { #category : 'testing' }

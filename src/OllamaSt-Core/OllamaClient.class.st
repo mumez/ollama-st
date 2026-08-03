@@ -165,5 +165,7 @@ OllamaClient >> httpJsonPostStreaming: path body: aDictionary [
 		yourself.
 	cli post: url contents: aDictionary.
 	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
-	^ OllamaStreamResponse on: (ZnCharacterReadStream on: cli response entity stream)
+	^ OllamaStreamResponse
+		on: (ZnCharacterReadStream on: cli response entity stream)
+		entity: cli response entity
 ]

@@ -112,14 +112,18 @@ response := ollama
     generate: 'Why is the sky blue? Answer in one sentence.'
     using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
 response do: [ :chunk | Transcript show: (chunk at: 'response'); flush ].
+```
 
+```smalltalk
 "Generate streaming — manual pull loop"
 response := ollama
     generate: 'Why is the sky blue? Answer in one sentence.'
     using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
 [ response atEnd ] whileFalse: [
     Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]); flush ].
+```
 
+```smalltalk
 "Chat streaming"
 | messages chatResponse |
 messages := {
