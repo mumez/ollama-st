@@ -5,10 +5,10 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: ${{ matrix.smalltalk }}
     strategy:
       matrix:
-        smalltalk: [ Pharo64-13 ]
-      name: ${{ matrix.smalltalk }}
+        smalltalk: [ Pharo64-12, Pharo64-13, Pharo64-14 ]
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
