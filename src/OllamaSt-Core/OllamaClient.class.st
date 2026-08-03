@@ -123,12 +123,17 @@ OllamaClient >> version [
 ]
 
 { #category : 'private' }
+OllamaClient >> newHttpClient [
+	^ ZnClient new
+		timeout: self settings timeout;
+		yourself
+]
+
+{ #category : 'private' }
 OllamaClient >> httpJsonGet: path [
 	| url cli |
 	url := self settings host , path.
-	cli := ZnClient new
-		timeout: self settings timeout;
-		yourself.
+	cli := self newHttpClient.
 	cli get: url.
 	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
 	^ STON fromString: cli response entity string
@@ -138,9 +143,8 @@ OllamaClient >> httpJsonGet: path [
 OllamaClient >> httpJsonPost: path body: aDictionary [
 	| url cli |
 	url := self settings host , path.
-	cli := ZnClient new
+	cli := self newHttpClient
 		forJsonREST;
-		timeout: self settings timeout;
 		yourself.
 	cli post: url contents: aDictionary.
 	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
