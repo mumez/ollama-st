@@ -121,7 +121,7 @@ response := ollama
     using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
 [
     [ response atEnd ] whileFalse: [
-        Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]) ]
+        Transcript show: ((response next ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]) ]
 ] ensure: [ response close ].
 ```
 
