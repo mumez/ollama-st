@@ -102,41 +102,6 @@ result at: 'done'.       "=> true"
 result at: 'model'.      "=> 'nemotron-3-nano:4b'"
 ```
 
-### Streaming
-
-Both `generate` and `chat` support streaming responses. Set `stream: true` in the builder block; the method then returns an `OllamaStreamResponse` instead of a `Dictionary`. Enumerate all chunks with `do:`; it closes the response automatically, including when the block exits early or raises an error.
-
-```smalltalk
-"Generate streaming — enumerate with do:"
-response := ollama
-    generate: 'Why is the sky blue? Answer in one sentence.'
-    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
-response do: [ :chunk | Transcript show: (chunk at: 'response'); flush ].
-```
-
-```smalltalk
-"Generate streaming — manual pull loop for finer control"
-response := ollama
-    generate: 'Why is the sky blue? Answer in one sentence.'
-    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
-[
-    [ response atEnd ] whileFalse: [
-        Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]); flush ]
-] ensure: [ response close ].
-```
-
-```smalltalk
-"Chat streaming"
-| messages chatResponse |
-messages := {
-    OllamaMessage system: 'You are a concise assistant.'.
-    OllamaMessage user: 'Why is the sky blue?' }.
-chatResponse := ollama
-    chatWith: messages
-    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
-chatResponse do: [ :chunk | Transcript show: ((chunk at: 'message') at: 'content'); flush ].
-```
-
 ### Timeout
 
 Generate requests can take time depending on the model. The default timeout is 120 seconds and can be adjusted:
@@ -184,6 +149,41 @@ result at: 'done'.                          "=> true"
 (result at: 'message') at: 'content'.       "=> generated reply string"
 ```
 
+### Streaming
+
+Both `generate` and `chat` support streaming responses. Set `stream: true` in the builder block; the method then returns an `OllamaStreamResponse` instead of a `Dictionary`. Enumerate all chunks with `do:`; it closes the response automatically, including when the block exits early or raises an error.
+
+```smalltalk
+"Generate streaming — enumerate with do:"
+response := ollama
+    generate: 'Why is the sky blue? Answer in one sentence.'
+    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
+response do: [ :chunk | Transcript show: (chunk at: 'response') ].
+```
+
+```smalltalk
+"Generate streaming — manual pull loop for finer control"
+response := ollama
+    generate: 'Why is the sky blue? Answer in one sentence.'
+    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
+[
+    [ response atEnd ] whileFalse: [
+        Transcript show: ((response next ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]) ]
+] ensure: [ response close ].
+```
+
+```smalltalk
+"Chat streaming"
+| messages chatResponse |
+messages := {
+    OllamaMessage system: 'You are a concise assistant.'.
+    OllamaMessage user: 'Why is the sky blue?' }.
+chatResponse := ollama
+    chatWith: messages
+    using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
+chatResponse do: [ :chunk | Transcript show: ((chunk at: 'message') at: 'content') ].
+```
+
 ### Tags, PS, Version
 
 ```smalltalk
@@ -197,7 +197,7 @@ ollama ps.
 
 "Get the Ollama server version"
 ollama version.
-"=> '0.9.6' (String)"
+"=> '0.32.5' (String)"
 ```
 
 ## Development
@@ -211,11 +211,15 @@ src/
 └── OllamaSt-Tests/
 ```
 
-Run the test suite:
+Run the test suites:
 
 ```smalltalk
 OllamaClientTest suite run.
+OllamaErrorTest suite run.
+OllamaStreamResponseTest suite run.
 ```
+
+Note: `OllamaClientTest` assumes a local Ollama server is running at `http://localhost:11434/`. `OllamaErrorTest` and `OllamaStreamResponseTest` do not require a running server.
 
 ## License
 

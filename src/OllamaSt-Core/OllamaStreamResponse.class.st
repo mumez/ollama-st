@@ -1,5 +1,5 @@
 "
-I represent a streaming NDJSON response from the Ollama API. Chunks are returned as-is by #nextMessages/#do: — an Ollama error occurring mid-stream arrives as a plain chunk Dictionary with an 'error' key rather than being signaled as an exception. A malformed or truncated NDJSON line will raise a STON parse error out of #nextMessages/#do:.
+I represent a streaming NDJSON response from the Ollama API. Chunks are returned as-is by #next/#do: — an Ollama error occurring mid-stream arrives as a plain chunk Dictionary with an 'error' key rather than being signaled as an exception. A malformed or truncated NDJSON line will raise a STON parse error out of #next/#do:.
 "
 Class {
 	#name : 'OllamaStreamResponse',
@@ -28,7 +28,7 @@ OllamaStreamResponse class >> on: aStream entity: aZnStreamingEntity [
 
 { #category : 'testing' }
 OllamaStreamResponse >> atEnd [
-	^ stream atEnd
+	^ self stream atEnd
 ]
 
 { #category : 'initialize-release' }
@@ -39,15 +39,20 @@ OllamaStreamResponse >> close [
 { #category : 'enumerating' }
 OllamaStreamResponse >> do: aBlock [
 	[ [ self atEnd ] whileFalse: [
-		self nextMessages ifNotNil: [ :chunk | aBlock value: chunk ] ] ]
+		self next ifNotNil: [ :chunk | aBlock value: chunk ] ] ]
 		ensure: [ self close ]
 ]
 
 { #category : 'accessing' }
-OllamaStreamResponse >> nextMessages [
+OllamaStreamResponse >> next [
 	| line |
-	line := stream upTo: Character lf.
-	^ line isEmpty ifTrue: [ nil ] ifFalse: [ STON fromString: line ]
+	line := self stream upTo: Character lf.
+	^ line ifEmpty: [ nil ] ifNotEmpty: [ STON fromString: line ]
+]
+
+{ #category : 'accessing-private' }
+OllamaStreamResponse >> stream [
+	^ stream
 ]
 
 { #category : 'initialize-release' }
