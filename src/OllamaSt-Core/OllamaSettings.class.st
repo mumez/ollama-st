@@ -109,7 +109,6 @@ OllamaSettings >> initialize [
 
 { #category : 'initialization' }
 OllamaSettings >> initFrom: otherSettings [
-	self initialize.
 	otherSettings settingsDict keysAndValuesDo: [ :k :v |
 		self settingsDict at: k put: v ]
 ]

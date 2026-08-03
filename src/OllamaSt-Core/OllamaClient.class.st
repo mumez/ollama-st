@@ -42,9 +42,10 @@ Class {
 
 { #category : 'instance creation' }
 OllamaClient class >> host: aString [
-	^ self new
-		settings: (OllamaSettings new host: aString; yourself);
-		yourself
+	| client |
+	client := self new.
+	client settings host: aString.
+	^ client
 ]
 
 { #category : 'actions' }

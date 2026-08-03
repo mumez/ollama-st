@@ -63,11 +63,13 @@ OllamaClientTest >> testModelGetterAndSetter [
 
 { #category : 'tests' }
 OllamaClientTest >> testSettingsInheritsDefaultModel [
-	| client |
+	| client originalDefaultModel |
+	originalDefaultModel := OllamaSettings default defaultModel.
 	OllamaSettings default defaultModel: 'default-model'.
-	client := OllamaClient new.
-	self assert: client model equals: 'default-model'.
-	OllamaSettings initialize
+	[
+		client := OllamaClient new.
+		self assert: client model equals: 'default-model' ]
+		ensure: [ OllamaSettings default defaultModel: originalDefaultModel ]
 ]
 
 { #category : 'tests' }
