@@ -134,7 +134,7 @@ messages := {
 chatResponse := ollama
     chatWith: messages
     using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
-chatResponse do: [ :chunk | Transcript show: ((chunk at: 'message') at: 'content'); flush ].
+chatResponse do: [ :chunk | Transcript show: ((chunk at: 'message') at: 'content') ].
 ```
 
 ### Timeout
