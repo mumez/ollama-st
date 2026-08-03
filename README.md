@@ -104,7 +104,7 @@ result at: 'model'.      "=> 'nemotron-3-nano:4b'"
 
 ### Streaming
 
-Both `generate` and `chat` support streaming responses. Set `stream: true` in the builder block; the method then returns an `OllamaStreamResponse` instead of a `Dictionary`. Read chunks one at a time with `nextMessages`/`atEnd`, or enumerate them all with `do:`.
+Both `generate` and `chat` support streaming responses. Set `stream: true` in the builder block; the method then returns an `OllamaStreamResponse` instead of a `Dictionary`. Enumerate all chunks with `do:`; it closes the response automatically, including when the block exits early or raises an error.
 
 ```smalltalk
 "Generate streaming — enumerate with do:"
@@ -115,12 +115,14 @@ response do: [ :chunk | Transcript show: (chunk at: 'response'); flush ].
 ```
 
 ```smalltalk
-"Generate streaming — manual pull loop"
+"Generate streaming — manual pull loop for finer control"
 response := ollama
     generate: 'Why is the sky blue? Answer in one sentence.'
     using: [ :params | params model: 'nemotron-3-nano:4b'; stream: true ].
-[ response atEnd ] whileFalse: [
-    Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]); flush ].
+[
+    [ response atEnd ] whileFalse: [
+        Transcript show: ((response nextMessages ifNil: [ Dictionary new ]) at: 'response' ifAbsent: [ '' ]); flush ]
+] ensure: [ response close ].
 ```
 
 ```smalltalk
