@@ -140,7 +140,7 @@ OllamaClient >> model: aString [
 
 { #category : 'accessing' }
 OllamaClient >> settings [
-	^ settings ifNil: [ settings := OllamaSettings new ]
+	^ settings ifNil: [ settings := OllamaSettings defaultCopied ]
 ]
 
 { #category : 'accessing' }

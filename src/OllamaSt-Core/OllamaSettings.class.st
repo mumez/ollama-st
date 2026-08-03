@@ -5,6 +5,7 @@ Responsibility:
 - I store host URL, default model name, and HTTP timeout as named settings.
 - I provide typed accessors with lazy-initialized defaults.
 - I expose a class-side singleton via #default for shared configuration.
+- I provide #defaultCopied to obtain a per-instance copy of the default settings.
 
 Collaborators:
 - OllamaClient: holds me and reads host, defaultModel, and timeout for every request.
@@ -34,6 +35,11 @@ Class {
 { #category : 'instance creation' }
 OllamaSettings class >> default [
 	^ default ifNil: [ default := self new ]
+]
+
+{ #category : 'instance creation' }
+OllamaSettings class >> defaultCopied [
+	^ self new initFrom: self default
 ]
 
 { #category : 'class initialization' }
@@ -99,6 +105,13 @@ OllamaSettings >> timeout: seconds [
 { #category : 'initialization' }
 OllamaSettings >> initialize [
 	settingsDict := nil
+]
+
+{ #category : 'initialization' }
+OllamaSettings >> initFrom: otherSettings [
+	self initialize.
+	otherSettings settingsDict keysAndValuesDo: [ :k :v |
+		self settingsDict at: k put: v ]
 ]
 
 { #category : 'accessing-private' }
