@@ -197,7 +197,7 @@ ollama ps.
 
 "Get the Ollama server version"
 ollama version.
-"=> '0.9.6' (String)"
+"=> '0.32.5' (String)"
 ```
 
 ## Development
