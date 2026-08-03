@@ -71,7 +71,9 @@ OllamaClient >> chatWith: messages using: aBlock [
 		yourself.
 	aBlock value: params.
 	body := params asDictionary.
-	^ self httpJsonPost: '/api/chat' body: body
+	^ params isStreaming
+		ifTrue: [ self httpJsonPostStreaming: '/api/chat' body: body ]
+		ifFalse: [ self httpJsonPost: '/api/chat' body: body ]
 ]
 
 { #category : 'actions' }

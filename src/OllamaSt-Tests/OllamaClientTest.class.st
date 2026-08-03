@@ -189,3 +189,24 @@ OllamaClientTest >> testChatWithMessages [
 	message := result at: 'message'.
 	self assert: (message at: 'role') equals: 'assistant'
 ]
+
+{ #category : 'tests' }
+OllamaClientTest >> testChatWithMessagesStreaming [
+	| response chunks messages |
+	messages := {
+		OllamaMessage system: 'You are a concise assistant.'.
+		OllamaMessage user: 'Why is the sky blue? Answer in one sentence.' }.
+	response := OllamaClient new
+		chatWith: messages
+		using: [ :params |
+			params
+				model: self defaultGenerateModel;
+				stream: true ].
+	self assert: (response isKindOf: OllamaStreamResponse).
+	chunks := OrderedCollection new.
+	response do: [ :chunk | chunks add: chunk ].
+	self assert: chunks isEmpty not.
+	self assert: (chunks last at: 'done').
+	self assert: (chunks anySatisfy: [ :c |
+		((c at: 'message') at: 'content' ifAbsent: [ '' ]) isEmpty not ])
+]

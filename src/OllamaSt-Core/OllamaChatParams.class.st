@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'model',
 		'messages',
-		'ollamaOptions'
+		'ollamaOptions',
+		'stream'
 	],
 	#category : 'OllamaSt-Core',
 	#package : 'OllamaSt-Core'
@@ -28,7 +29,7 @@ OllamaChatParams >> asDictionary [
 	| dict |
 	dict := Dictionary new.
 	dict at: 'model' put: (self model ifNil: [ '' ]).
-	dict at: 'stream' put: false.
+	dict at: 'stream' put: self isStreaming.
 	dict at: 'messages' put: (self messages collect: [ :m | m asDictionary ]).
 	self ollamaOptions ifNotNil: [ :opts |
 		opts asDictionary ifNotEmpty: [ :optsDict | dict at: 'options' put: optsDict ] ].
@@ -68,4 +69,19 @@ OllamaChatParams >> optionsBy: aBlock [
 { #category : 'accessing' }
 OllamaChatParams >> systemMessage: aString [
 	self messages addFirst: (OllamaMessage system: aString)
+]
+
+{ #category : 'accessing' }
+OllamaChatParams >> stream [
+	^ stream
+]
+
+{ #category : 'accessing' }
+OllamaChatParams >> stream: aBoolean [
+	stream := aBoolean
+]
+
+{ #category : 'testing' }
+OllamaChatParams >> isStreaming [
+	^ self stream = true
 ]
