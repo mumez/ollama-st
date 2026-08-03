@@ -32,7 +32,9 @@ OllamaClient >> generate: prompt using: aBlock [
 	aBlock value: params.
 	body := params asDictionary.
 	body at: 'prompt' put: prompt.
-	^ self httpJsonPost: '/api/generate' body: body
+	^ params isStreaming
+		ifTrue: [ self httpJsonPostStreaming: '/api/generate' body: body ]
+		ifFalse: [ self httpJsonPost: '/api/generate' body: body ]
 ]
 
 { #category : 'actions' }
@@ -149,4 +151,17 @@ OllamaClient >> httpJsonPost: path body: aDictionary [
 	cli post: url contents: aDictionary.
 	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
 	^ STON fromString: cli response entity string
+]
+
+{ #category : 'private' }
+OllamaClient >> httpJsonPostStreaming: path body: aDictionary [
+	| url cli |
+	url := self settings host , path.
+	cli := self newHttpClient
+		contentWriter: [ :data | ZnEntity json: (ZnUtils defaultJSONWriter toString: data) ];
+		streaming: true;
+		yourself.
+	cli post: url contents: aDictionary.
+	cli isSuccess ifFalse: [ (OllamaError fromResponse: cli response) signal ].
+	^ OllamaStreamResponse on: (ZnCharacterReadStream on: cli response entity stream)
 ]

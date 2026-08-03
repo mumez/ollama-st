@@ -101,6 +101,23 @@ OllamaClientTest >> testGenerateUsingBlock [
 ]
 
 { #category : 'tests' }
+OllamaClientTest >> testGenerateUsingBlockWithStreaming [
+	| response chunks |
+	response := OllamaClient new
+		generate: 'Why is the sky blue? Answer in one sentence.'
+		using: [ :params |
+			params
+				model: self defaultGenerateModel;
+				stream: true ].
+	self assert: (response isKindOf: OllamaStreamResponse).
+	chunks := OrderedCollection new.
+	response do: [ :chunk | chunks add: chunk ].
+	self assert: chunks isEmpty not.
+	self assert: (chunks last at: 'done').
+	self assert: (chunks anySatisfy: [ :c | (c at: 'response' ifAbsent: [ '' ]) isEmpty not ])
+]
+
+{ #category : 'tests' }
 OllamaClientTest >> testChatWithModel [
 	| result message |
 	result := OllamaClient new

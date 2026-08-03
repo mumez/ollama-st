@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'model',
 		'system',
-		'ollamaOptions'
+		'ollamaOptions',
+		'stream'
 	],
 	#category : 'OllamaSt-Core',
 	#package : 'OllamaSt-Core'
@@ -23,7 +24,7 @@ OllamaGenerateParams >> asDictionary [
 	| dict |
 	dict := Dictionary new.
 	dict at: 'model' put: (self model ifNil: [ '' ]).
-	dict at: 'stream' put: false.
+	dict at: 'stream' put: self isStreaming.
 	self system ifNotNil: [ :s | dict at: 'system' put: s ].
 	self ollamaOptions ifNotNil: [ :opts |
 		opts asDictionary ifNotEmpty: [ :optsDict | dict at: 'options' put: optsDict ] ].
@@ -51,6 +52,16 @@ OllamaGenerateParams >> optionsBy: aBlock [
 ]
 
 { #category : 'accessing' }
+OllamaGenerateParams >> stream [
+	^ stream
+]
+
+{ #category : 'accessing' }
+OllamaGenerateParams >> stream: aBoolean [
+	stream := aBoolean
+]
+
+{ #category : 'accessing' }
 OllamaGenerateParams >> system [
 	^ system
 ]
@@ -58,4 +69,9 @@ OllamaGenerateParams >> system [
 { #category : 'accessing' }
 OllamaGenerateParams >> system: aString [
 	system := aString
+]
+
+{ #category : 'testing' }
+OllamaGenerateParams >> isStreaming [
+	^ self stream = true
 ]
