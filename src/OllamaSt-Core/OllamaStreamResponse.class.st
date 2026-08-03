@@ -28,7 +28,7 @@ OllamaStreamResponse class >> on: aStream entity: aZnStreamingEntity [
 
 { #category : 'testing' }
 OllamaStreamResponse >> atEnd [
-	^ stream atEnd
+	^ self stream atEnd
 ]
 
 { #category : 'initialize-release' }
@@ -46,8 +46,13 @@ OllamaStreamResponse >> do: aBlock [
 { #category : 'accessing' }
 OllamaStreamResponse >> nextMessages [
 	| line |
-	line := stream upTo: Character lf.
-	^ line isEmpty ifTrue: [ nil ] ifFalse: [ STON fromString: line ]
+	line := self stream upTo: Character lf.
+	^ line ifEmpty: [ nil ] ifNotEmpty: [ STON fromString: line ]
+]
+
+{ #category : 'accessing-private' }
+OllamaStreamResponse >> stream [
+	^ stream
 ]
 
 { #category : 'initialize-release' }

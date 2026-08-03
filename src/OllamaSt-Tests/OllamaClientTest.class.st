@@ -109,7 +109,7 @@ OllamaClientTest >> testGenerateUsingBlockWithStreaming [
 			params
 				model: self defaultGenerateModel;
 				stream: true ].
-	self assert: (response isKindOf: OllamaStreamResponse).
+	self assert: response class equals: OllamaStreamResponse.
 	chunks := OrderedCollection new.
 	response do: [ :chunk | chunks add: chunk ].
 	self assert: chunks isEmpty not.
@@ -190,19 +190,20 @@ OllamaClientTest >> testChatWithMessages [
 	self assert: (message at: 'role') equals: 'assistant'
 ]
 
+{ #category : 'fixtures' }
+OllamaClientTest >> streamingChatMessages [
+	^ {
+		OllamaMessage system: 'You are a concise assistant.'.
+		OllamaMessage user: 'Why is the sky blue? Answer in one sentence.' }
+]
+
 { #category : 'tests' }
 OllamaClientTest >> testChatWithMessagesStreaming [
-	| response chunks messages |
-	messages := {
-		OllamaMessage system: 'You are a concise assistant.'.
-		OllamaMessage user: 'Why is the sky blue? Answer in one sentence.' }.
+	| response chunks |
 	response := OllamaClient new
-		chatWith: messages
-		using: [ :params |
-			params
-				model: self defaultGenerateModel;
-				stream: true ].
-	self assert: (response isKindOf: OllamaStreamResponse).
+		chatWith: self streamingChatMessages
+		using: [ :params | params model: self defaultGenerateModel; stream: true ].
+	self assert: response class equals: OllamaStreamResponse.
 	chunks := OrderedCollection new.
 	response do: [ :chunk | chunks add: chunk ].
 	self assert: chunks isEmpty not.
