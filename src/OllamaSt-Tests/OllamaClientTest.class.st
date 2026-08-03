@@ -54,6 +54,14 @@ OllamaClientTest >> testEmbedWithDefaultModel [
 ]
 
 { #category : 'tests' }
+OllamaClientTest >> testModelGetterAndSetter [
+	| client |
+	client := OllamaClient new.
+	client model: 'llama3'.
+	self assert: client model equals: 'llama3'
+]
+
+{ #category : 'tests' }
 OllamaClientTest >> testSettingsHost [
 	| client |
 	client := OllamaClient host: 'http://localhost:11434'.

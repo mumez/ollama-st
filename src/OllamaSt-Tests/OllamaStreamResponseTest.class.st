@@ -6,14 +6,14 @@ Class {
 }
 
 { #category : 'tests' }
-OllamaStreamResponseTest >> testNextMessagesAndAtEnd [
+OllamaStreamResponseTest >> testNextAndAtEnd [
 	| ndjson response |
 	ndjson := '{"response":"Hello"}' , String lf , '{"response":"World","done":true}' , String lf.
 	response := OllamaStreamResponse on: ndjson readStream.
 	self deny: response atEnd.
-	self assert: (response nextMessages at: 'response') equals: 'Hello'.
+	self assert: (response next at: 'response') equals: 'Hello'.
 	self deny: response atEnd.
-	self assert: (response nextMessages at: 'response') equals: 'World'.
+	self assert: (response next at: 'response') equals: 'World'.
 	self assert: response atEnd
 ]
 
@@ -37,22 +37,22 @@ OllamaStreamResponseTest >> testDoOnEmptyStreamNeverInvokesBlock [
 ]
 
 { #category : 'tests' }
-OllamaStreamResponseTest >> testNextMessagesReturnsNilForBlankLine [
+OllamaStreamResponseTest >> testNextReturnsNilForBlankLine [
 	| ndjson response |
 	ndjson := '{"response":"Hello"}' , String lf , String lf , '{"response":"World","done":true}' , String lf.
 	response := OllamaStreamResponse on: ndjson readStream.
-	self assert: (response nextMessages at: 'response') equals: 'Hello'.
-	self assert: response nextMessages isNil.
-	self assert: (response nextMessages at: 'response') equals: 'World'.
+	self assert: (response next at: 'response') equals: 'Hello'.
+	self assert: response next isNil.
+	self assert: (response next at: 'response') equals: 'World'.
 	self assert: response atEnd
 ]
 
 { #category : 'tests' }
-OllamaStreamResponseTest >> testNextMessagesReadsLastLineWithoutTrailingNewline [
+OllamaStreamResponseTest >> testNextReadsLastLineWithoutTrailingNewline [
 	| ndjson response |
 	ndjson := '{"response":"Hello"}' , String lf , '{"response":"World","done":true}'.
 	response := OllamaStreamResponse on: ndjson readStream.
-	self assert: (response nextMessages at: 'response') equals: 'Hello'.
-	self assert: (response nextMessages at: 'response') equals: 'World'.
+	self assert: (response next at: 'response') equals: 'Hello'.
+	self assert: (response next at: 'response') equals: 'World'.
 	self assert: response atEnd
 ]

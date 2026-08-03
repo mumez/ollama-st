@@ -22,7 +22,7 @@ Public API and Key Messages:
 - #tags — list locally available models.
 - #ps — list currently running (loaded) models.
 - #version — return the Ollama server version string.
-- #model: — set the default model on the receiver's settings.
+- #model / #model: — get or set the default model on the receiver's settings.
 
 Example:
   ollama := OllamaClient new.
@@ -126,6 +126,11 @@ OllamaClient >> embed: text using: aBlock [
 	body := params asDictionary.
 	body at: 'input' put: text.
 	^ self httpJsonPost: '/api/embed' body: body
+]
+
+{ #category : 'accessing' }
+OllamaClient >> model [
+	^ self settings defaultModel
 ]
 
 { #category : 'accessing' }
